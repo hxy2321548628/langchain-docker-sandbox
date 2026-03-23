@@ -17,7 +17,12 @@
 - Docker 和 Docker Compose
 - DeepSeek API 密钥
 
-## 安装
+## 快速安装
+```shell
+uv add langchain_docker_sandbox
+```
+
+## git安装
 
 1. 克隆仓库：
 ```bash
