@@ -18,7 +18,7 @@
 - DeepSeek API 密钥
 
 ## 快速安装
-```shell
+```bash
 uv add langchain_docker_sandbox
 ```
 
