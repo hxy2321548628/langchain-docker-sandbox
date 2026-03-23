@@ -19,7 +19,7 @@
 
 ## 快速安装
 ```bash
-uv add langchain_docker_sandbox
+uv add langchain-docker-sandbox
 ```
 
 ## git安装
