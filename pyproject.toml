@@ -1,10 +1,41 @@
 [project]
-name = "langchain_docker_sandbox"
+name = "langchain-docker-sandbox"
 version = "0.1.0"
-description = "Add your description here"
+description = "Custom Docker sandbox backend for Deep Agents framework, providing isolated code execution environments"
 readme = "README.md"
 requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "黄翔阳", email = "hxy2321548628@163.com" }
+]
+
+keywords = [
+    "deepagents",
+    "docker",
+    "sandbox",
+    "agent",
+    "ai",
+    "code-execution",
+    "container",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+]
+
 dependencies = ["deepagents>=0.4.11", "docker>=7.1.0"]
+
+[project.urls]
+Homepage = "https://github.com/hxy2321548628/langchain-docker-sandbox"
+Documentation = "https://github.com/hxy2321548628/langchain-docker-sandbox#readme"
+Repository = "https://github.com/hxy2321548628/langchain-docker-sandbox"
+Issues = "https://github.com/hxy2321548628/langchain-docker-sandbox/issues"
 
 [dependency-groups]
 dev = [
@@ -91,3 +122,14 @@ allow-star-arg-any = true # 允许 *args 使用 Any 类型
 [tool.ruff.lint.pydocstyle]
 convention = "google"        # 使用 Google 风格的文档字符串
 ignore-var-parameters = true # 忽略变量参数的文档
+
+
+# ============================================================================
+# 构建配置 (用于 PyPI 发布)
+# ============================================================================
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/langchain_docker_sandbox"]

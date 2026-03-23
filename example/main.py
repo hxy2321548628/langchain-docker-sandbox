@@ -1,7 +1,7 @@
 from deepagents import create_deep_agent
 
-from langchain_docer_sandbox import DockerSandbox
-from example.settings import settings
+from settings import settings
+from langchain_docker_sandbox import DockerSandbox
 
 
 # Custom Docker sandbox using local Docker container

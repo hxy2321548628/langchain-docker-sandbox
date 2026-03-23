@@ -4,19 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Deep Agents application that provides AI agents with sandboxed code execution capabilities. The project uses the Deep Agents framework with Daytona sandbox integration and DeepSeek as the LLM provider.
+This is a Deep Agents application that provides AI agents with sandboxed code execution capabilities using a custom Docker sandbox backend. The project implements `DockerSandbox` class that integrates with Deep Agents framework, allowing agents to execute commands and manipulate files in a Docker container.
 
 ## Architecture
 
 **Core Components:**
-- `main.py` - Entry point that creates a Deep Agent with Daytona sandbox backend
-- `settings.py` - Pydantic Settings configuration for environment variables
-- `filesystem/` - Directory mounted by Docker Compose sandbox container
+- `langchain_docer_sandbox.py` - Custom `DockerSandbox` backend implementing `BaseSandbox` interface
+- `example/` - Example code demonstrating Deep Agent usage with DockerSandbox
+- `test/` - Pytest test suite for DockerSandbox
+- `filesystem/` - Directory mounted to Docker Compose sandbox container at `/workspace`
+- `docker-compose.yml` - Docker Compose configuration for the uv-sandbox container
 
-**Agent Pattern:**
+**DockerSandbox Backend:**
 ```python
-sandbox = Daytona().create()
-backend = DaytonaSandbox(sandbox=sandbox)
+backend = DockerSandbox(container_name="uv-sandbox", work_dir="/workspace")
 
 agent = create_deep_agent(
     model="deepseek:deepseek-chat",
@@ -27,39 +28,73 @@ agent = create_deep_agent(
 
 The agent receives messages in the format `{"messages": [{"role": "user", "content": "..."}]}` and returns results in `result["messages"][-1].content`.
 
+**Docker Container Setup:**
+- Container name: `uv-sandbox`
+- Image: `astral/uv:python3.13-bookworm-slim`
+- Working directory: `/workspace`
+- Local `filesystem/` directory mounted at `/workspace`
+- Uses Docker SDK for container operations
+
+**DockerSandbox Capabilities:**
+- `execute()` - Run shell commands in the container
+- `write()` - Create new files via tar archive
+- `read()` - Read files with line numbers (supports offset/limit)
+- `edit()` - Replace string occurrences in files (single or all)
+- `upload_files()` - Batch file upload
+- `download_files()` - Batch file download
+- `ls_info()` - Directory listing
+- `glob_info()` - Pattern-based file search
+- `grep_raw()` - Text search with structured output
+
 **Configuration Management:**
-- Environment variables are stored in `.env`
-- Settings are loaded via Pydantic Settings with `SecretStr` for sensitive values
-- Required environment variables: `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `TAVILY_API_KEY`, `DAYTONA_API_KEY`
+- Environment variables stored in `example/.env`
+- Settings loaded via Pydantic Settings in `example/settings.py`
+- Required environment variables: `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`
 
 ## Common Commands
 
 ```bash
-# Run the agent
-uv run python main.py
+# Start sandbox container
+docker compose up -d
 
-# Docker Compose sandbox
-docker compose up -d               # Start sandbox container
-docker compose exec uv-sandbox bash # Enter sandbox container
-docker compose down                # Stop sandbox container
+# Enter sandbox container
+docker compose exec uv-sandbox bash
+
+# Stop sandbox container
+docker compose down
+
+# Run example agent
+cd example && python main.py
 
 # Install/update dependencies
 uv sync
 
+# Run tests
+uv run pytest
+
+# Run specific test
+uv run pytest test/test_docker_sandbox.py::TestDockerSandboxExecute::test_execute_simple_command
+
 # Code linting and formatting
-ruff check .                # Check for issues
-ruff check --fix .          # Auto-fix issues
-ruff format .               # Format code
+ruff check .
+ruff check --fix .
+ruff format .
 ```
 
 ## Dependencies
 
+**Core Dependencies:**
 - `deepagents>=0.4.11` - Deep Agents framework
-- `langchain-daytona>=0.0.4` - Daytona sandbox integration
+- `docker>=7.1.0` - Docker SDK for Python
+
+**Development Dependencies:**
+- `pytest>=9.0.2` - Testing framework
+- `dotenv>=0.9.9` - Environment variable loading
+- `langchain-daytona>=0.0.4` - Daytona sandbox integration (optional, for reference)
 - `langchain-deepseek>=1.0.1` - DeepSeek LLM provider
-- `tavily-python>=0.7.23` - Search capabilities
-- `ruff>=0.15.6` - Linting and formatting (line length: 150)
 - `pydantic>=2.12.5`, `pydantic-settings>=2.13.1` - Configuration
+- `ruff>=0.15.6` - Linting and formatting
+- `tavily-python>=0.7.23` - Search capabilities
 
 ## Code Style
 
@@ -69,6 +104,15 @@ ruff format .               # Format code
 - Import order: standard-library → third-party → first-party → local-folder
 - Two blank lines after imports
 - Python 3.13+ required
+
+## Testing
+
+Tests are located in `test/test_docker_sandbox.py`. Run tests with `uv run pytest`.
+
+**Test Fixtures:**
+- `backend()` - Creates `DockerSandbox` instance for testing (requires uv-sandbox container running)
+
+**Important:** The uv-sandbox container must be running before executing tests.
 
 ## Reference Documentation
 
@@ -115,26 +159,17 @@ Local reference documentation is available at `./.langchain-langgraph-deepagent-
 - `/src/oss/reference/langchain-python.mdx` - LangChain Python API
 - `/src/oss/reference/langgraph-python.mdx` - LangGraph Python API
 - `/src/oss/reference/integrations-python.mdx` - Python integrations API
-- `/src/oss/reference/deepagents-javascript.mdx` - Deep Agents JavaScript API
-- `/src/oss/reference/langchain-javascript.mdx` - LangChain JavaScript API
-- `/src/oss/reference/langgraph-javascript.mdx` - LangGraph JavaScript API
-- `/src/oss/reference/integrations-javascript.mdx` - JavaScript integrations API
 
 **Online API Reference:**
 - `https://reference.langchain.com/python/deepagents` - Deep Agents Python API
 - `https://reference.langchain.com/python/langchain` - LangChain Python API
 - `https://reference.langchain.com/python/langgraph` - LangGraph Python API
 - `https://reference.langchain.com/python/integrations/overview` - Python integrations
-- `https://reference.langchain.com/python/langchain_mcp_adapters/` - MCP adapters Python
-- `https://reference.langchain.com/javascript/deepagents` - Deep Agents JS API
-- `https://reference.langchain.com/javascript/langchain` - LangChain JS API
-- `https://reference.langchain.com/javascript/langchain-langgraph` - LangGraph JS API
-- `https://reference.langchain.com/javascript/langchain-community` - JS integrations
-- `https://reference.langchain.com/javascript/langchain-mcp-adapters` - MCP adapters JS
 
 ## Important Notes
 
-- The Daytona sandbox is explicitly stopped on exception for cleanup
-- Algorithm directory (if exists) is excluded from linting
-- Never commit `.env` file with real API keys
 - The `filesystem/` directory is mounted to the Docker Compose sandbox at `/workspace` for isolated code execution
+- Tests require the uv-sandbox container to be running (`docker compose up -d`)
+- Never commit `.env` file with real API keys
+- All file operations are relative to `/workspace` inside the container
+- File uploads use tar archives for efficiency and proper permission handling

@@ -2,7 +2,7 @@
 
 import pytest
 
-from langchain_docer_sandbox import DockerSandbox
+from src.langchain_docker_sandbox.sandbox import DockerSandbox
 
 
 @pytest.fixture
