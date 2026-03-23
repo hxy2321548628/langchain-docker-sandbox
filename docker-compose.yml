@@ -1,0 +1,10 @@
+services:
+  uv-sandbox:
+    image: astral/uv:python3.13-bookworm-slim
+    container_name: uv-sandbox
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    volumes:
+      - ./filesystem:/workspace
+    command: /bin/bash
