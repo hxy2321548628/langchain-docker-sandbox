@@ -2,6 +2,8 @@
 
 一个为 Deep Agents 框架提供自定义 Docker 沙盒后端的项目，让 AI Agent 可以在隔离的 Docker 容器中安全地执行代码和操作文件。
 
+> **项目地址**: https://github.com/hxy2321548628/langchain-docker-sandbox
+
 ## 功能特性
 
 - **隔离执行环境**：使用 Docker 容器提供安全的代码执行环境
@@ -26,8 +28,8 @@ uv add langchain-docker-sandbox
 
 1. 克隆仓库：
 ```bash
-git clone <repository-url>
-cd langchain_docker_sandbox
+git clone https://github.com/hxy2321548628/langchain-docker-sandbox
+cd langchain-docker-sandbox
 ```
 
 2. 安装依赖：
@@ -274,6 +276,14 @@ uv run pytest
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+- **提交 Issue**: [GitHub Issues](https://github.com/hxy2321548628/langchain-docker-sandbox/issues)
+- **提交 Pull Request**: [GitHub Pull Requests](https://github.com/hxy2321548628/langchain-docker-sandbox/pulls)
+
+在提交代码前，请确保：
+1. 通过所有测试：`uv run pytest`
+2. 代码通过格式化检查：`ruff check .` 和 `ruff format .`
+3. 更新相关文档
 
 ## 许可证
 
